@@ -16,7 +16,7 @@
     "language": "C#",
     "type": "project"
   },
-  "sourceName": "Modelo",
+  "sourceName": "Template",
   "preferNameDirectory": false,
   "symbols": {
     "Framework": {
@@ -49,7 +49,7 @@
   },
   "primaryOutputs": [
     {
-      "path": "Inova.Modelo.sln"
+      "path": "Inova.Template.sln"
     }
   ],
   "sources": [
@@ -83,6 +83,7 @@
           "text": "Run 'dotnet restore'"
         }
       ],
+      "actionId": "210D431B-A78B-4D2F-B762-4ED3E3EA9030",
       "continueOnError": true
     }
   ]

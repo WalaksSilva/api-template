@@ -1,8 +1,8 @@
 resources:
   repositories:
-    - repository: coremodelo
+    - repository: coretemplate
       type: git
-      name: Pipelines/core-modelo
+      name: Pipelines/core-template
 
 trigger:
   branches:
@@ -11,7 +11,7 @@ trigger:
     exclude: [ 'README.md' ] # caminhos de arquivos que não irão rodar o pipeline
 
 extends:
-  modelo: main.yml@coremodelo
+  template: main.yml@coretemplate
   parameters:
     technology: 'dotnetcore'
     azResourceName: 'TO DO eg. customer'
