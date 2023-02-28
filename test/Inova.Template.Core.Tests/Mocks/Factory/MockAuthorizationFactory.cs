@@ -24,8 +24,8 @@ namespace Inova.Template.Core.Tests.Mocks.Factory
                 .AddJsonFile($"appsettings.{PlatformServices.Default.Application.ApplicationName}.json")
                 .Build();
 
-            var issuer = configuration["InovaID:Authority"];
-            var audience = configuration["InovaID:Audience"];
+            var issuer = configuration["Authentication:Authority"];
+            var audience = configuration["Authentication:ValidAudience"];
             var expiry = DateTime.Now.AddMinutes(300);
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("only_test#Desta maneira, o desenvolvimento contínuo de distintas formas de atuação promove a alavancagem das condições inegavelmente apropriadas.#only_test"));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);

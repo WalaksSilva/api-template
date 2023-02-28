@@ -50,6 +50,7 @@ using Inova.Template.Infra.Identity;
 using Inova.Template.Infra.Repository;
 using Inova.Template.Infra.Services;
 using Inova.Template.Infra.UoW;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Inova.Template.API;
 
@@ -91,32 +92,17 @@ public class Startup
             options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
         }).AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
         {
-            options.Authority = Configuration["InovaID:Authority"];
-            options.Audience = Configuration["InovaID:Audience"];
-            options.RequireHttpsMetadata = false;
-
-            if (PlatformServices.Default.Application.ApplicationName == "testhost")
+            options.RequireHttpsMetadata = bool.Parse(Configuration["Authentication:RequireHttpsMetadata"]);
+            options.Authority = Configuration["Authentication:Authority"];
+            options.IncludeErrorDetails = bool.Parse(Configuration["Authentication:IncludeErrorDetails"]);
+            options.TokenValidationParameters = new TokenValidationParameters()
             {
-                options.Configuration = new Microsoft.IdentityModel.Protocols.OpenIdConnect.OpenIdConnectConfiguration();
-            }
-
-            options.Events = new JwtBearerEvents
-            {
-                OnTokenValidated = ctx =>
-                {
-                    var jwtClaimScope = ctx.Principal.Claims.FirstOrDefault(x => x.Type == "scope")?.Value;
-
-                    var claims = new List<Claim>
-                    {
-                        new Claim(ClaimTypes.System, jwtClaimScope),
-                        new Claim(ClaimTypes.Authentication, ((JwtSecurityToken)ctx.SecurityToken).RawData)
-                    };
-
-                    var claimsIdentity = new ClaimsIdentity(claims);
-                    ctx.Principal.AddIdentity(claimsIdentity);
-                    ctx.Success();
-                    return System.Threading.Tasks.Task.CompletedTask;
-                }
+                ValidateAudience = bool.Parse(Configuration["Authentication:ValidateAudience"]),
+                ValidAudience = Configuration["Authentication:ValidAudience"],
+                ValidateIssuerSigningKey = bool.Parse(Configuration["Authentication:ValidateIssuerSigningKey"]),
+                ValidateIssuer = bool.Parse(Configuration["Authentication:ValidateIssuer"]),
+                ValidIssuer = Configuration["Authentication:ValidIssuer"],
+                ValidateLifetime = bool.Parse(Configuration["Authentication:ValidateLifetime"])
             };
         });
         services.Configure<TelemetryConfiguration>((o) =>
@@ -158,7 +144,7 @@ public class Startup
             builder.AddSqlServer(Configuration["ConnectionStrings:CustomerDB"], tags: new[] { "services" });
 
             //dotnet add <Project> package AspNetCore.HealthChecks.OpenIdConnectServer
-            builder.AddIdentityServer(new Uri(Configuration["InovaID:Authority"]), "SSO Inova", tags: new[] { "services" });
+            builder.AddIdentityServer(new Uri(Configuration["Authentication:Authority"]), "SSO Inova", tags: new[] { "services" });
 
             builder.AddApplicationInsightsPublisher();
         }
@@ -229,8 +215,8 @@ public class Startup
             app.UseSwaggerUi3();
         }
 
-        app.UseAuthorization();
         app.UseAuthentication();
+        app.UseAuthorization();
         app.UseLogMiddleware();
 
         app.UseExceptionHandler(new ExceptionHandlerOptions

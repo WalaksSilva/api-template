@@ -4,9 +4,12 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Inova.Template.API.Services.Interfaces;
 using Inova.Template.API.ViewModels.Customer;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Inova.Template.API.Controllers;
 
+//[Authorize(Roles = "view-report")]
+[Authorize]
 [ApiController]
 [Produces("application/json")]
 [Route("api/v1/customers")]
